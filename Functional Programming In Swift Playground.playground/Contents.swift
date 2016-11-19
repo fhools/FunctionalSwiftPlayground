@@ -79,6 +79,43 @@ func shift(offset: Position, region: Region) -> Region {
 
 var testWithinCircleAtPosition = shift(Position(x: 5, y: 5), circle(10))
 
+// Test if a point is not within a region
+func invert(region: Region) -> Region {
+    return { point in !region(point) }
+}
+
+// Test if a point is in the intersection of two regions
+
+func intersection(region1: Region, region2: Region) -> Region {
+    return { point in region1(point) && region2(point) }
+}
+
+
+// Test if a point is in the union of two regions
+func union(region1: Region, region2: Region) -> Region {
+    return { point in region1(point) || region2(point) }
+}
+
+// Test if a point is in the difference of a region minus a piece of that region
+func difference(region: Region, minusRegion: Region) -> Region {
+    return intersection(region, invert(minusRegion))
+}
+
+
+// Now we can rewrite inRange4 a lot cleaner
+
+func inRange(ownPosition: Position, target: Position, friendly: Position, range: Distance, minimumDistance: Distance) -> Bool {
+    let rangeRegion = difference(circle(range), circle(minimumDistance))
+    let targetRegion = shift(ownPosition, rangeRegion)
+    let friendlyRegion = shift(friendly, circle(minimumDistance))
+    let validRegion = difference(targetRegion, friendlyRegion)
+    return validRegion(target)
+}
+
+
+
+
+
 
 
 
